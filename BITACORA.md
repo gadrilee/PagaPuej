@@ -15,7 +15,9 @@
 | 5 | 2026-08-25 14:02 | ⚡ EJECUCIÓN BACKEND | Credenciales Supabase recibidas. Decisión: auth con login desde inicio (landing + Sign In + Sign Up). Instalando drizzle-orm, @supabase/ssr. Creando schema, migraciones, Server Actions y páginas de auth. |
 | 6 | 2026-08-25 14:33 | ✅ BACKEND COMPLETADO | Tablas creadas en Supabase (trips, participants, expenses, expense_splits, trip_members). Middleware Next.js protege /trips/*. Páginas /auth/login, /auth/register, /auth/check-email, /auth/callback operativas. Server Actions para CRUD. Landing pública con Sign In/Sign Up. Commit f635ac2 pusheado a GitHub. |
 | 7 | 2026-08-25 14:47 | 🔄 MIGRACIÓN PAGINAS | Conectando páginas de detalle (/trips/[id], /gastos, /saldos, /liquidar) a Supabase via Drizzle ORM. Eliminando dependencia de Zustand/localStorage para datos persistentes. |
+| 8 | 2026-08-25 17:19 | 🐛 BUGFIX | Se resolvió el error "Viaje no encontrado" tras crear un viaje. La falla ocurría por leer el DOM durante el renderizado (Client Component) intentando extraer datos inyectados por un Layout (Server Component). Se refactorizó usando `React Context` (`TripProvider`) en `useTripData` para un paso de datos limpio y robusto. Fase 4 (Server Components) completada. |
+| 9 | 2026-08-25 17:48 | 🐛 BUGFIX | Se corrigió un error en la inserción de gastos (`expense_splits`). Se usó `db.transaction` para asegurar que el gasto y la división de pagos se inserten en la misma transacción y conexión de base de datos, evitando problemas de sincronización con el pooler (PgBouncer). También se implementó eliminación de duplicados para los participantes seleccionados. |
 
 ---
 
-_Última actualización: 2026-08-25 14:47_
+_Última actualización: 2026-08-25 17:48_
