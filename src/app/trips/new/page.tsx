@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tripSchema, type TripFormData } from "@/lib/validations";
-import { useTripStore } from "@/store/useTripStore";
+import { createTripAction } from "@/server/actions/trips";
 import Navbar from "@/components/layout/Navbar";
 import { Plus, Trash2, ArrowLeft, Plane, Users, Settings, Check } from "lucide-react";
 import Link from "next/link";

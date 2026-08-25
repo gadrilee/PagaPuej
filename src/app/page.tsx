@@ -1,293 +1,135 @@
-"use client";
-
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { useTripStore } from "@/store/useTripStore";
-import { calculateBalances, calculateSettlement, formatAmount, getTripTotalCents } from "@/lib/calculations";
-import { Plus, ArrowRight, TrendingUp, Users, Wallet, Zap } from "lucide-react";
-import TripCard from "@/components/trips/TripCard";
-import Navbar from "@/components/layout/Navbar";
+import { createClient } from "@/lib/supabase/server";
+import { ArrowRight, Zap, Users, Receipt, ArrowRightLeft, ShieldCheck } from "lucide-react";
 
-export default function HomePage() {
-  const { trips } = useTripStore();
-
-  const totalTrips = trips.length;
-  const totalExpenses = trips.reduce((sum, t) => sum + t.expenses.length, 0);
-  const totalSpent = trips.reduce((sum, t) => {
-    const cents = getTripTotalCents(t);
-    // Only show BOB for simplicity on dashboard
-    return sum + (t.currency === "BOB" ? cents : 0);
-  }, 0);
+export default async function HomePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <>
-      <Navbar />
-      <main style={{ minHeight: "100vh" }}>
-        {/* Hero Section */}
-        <section
-          className="page-container"
-          style={{ paddingTop: "4rem", paddingBottom: "3rem" }}
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            style={{ maxWidth: 640, marginBottom: "3rem" }}
-          >
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                background: "rgba(124, 58, 237, 0.12)",
-                border: "1px solid rgba(124, 58, 237, 0.25)",
-                borderRadius: "var(--radius-full)",
-                padding: "6px 14px",
-                marginBottom: "1.5rem",
-                fontSize: "0.8125rem",
-                color: "var(--accent-violet)",
-                fontWeight: 600,
-              }}
-            >
-              <Zap size={14} />
-              Cuentas Claras, Amistades Duraderas
+    <main style={{ minHeight: "100vh" }}>
+      {/* ── Navbar ── */}
+      <nav style={{
+        position: "sticky", top: 0, zIndex: 50,
+        borderBottom: "1px solid var(--border-subtle)",
+        background: "rgba(10,11,15,0.85)",
+        backdropFilter: "blur(20px)",
+      }}>
+        <div className="page-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: "var(--gradient-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, color: "white", boxShadow: "0 0 20px rgba(124,58,237,0.4)" }}>P</div>
+            <div>
+              <div className="gradient-text" style={{ fontWeight: 800, fontSize: "1.1rem", lineHeight: 1 }}>PagaPuej</div>
+              <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", letterSpacing: "0.05em" }}>Cuentas Claras</div>
             </div>
-
-            <h1
-              style={{
-                fontSize: "clamp(2rem, 5vw, 3.5rem)",
-                fontWeight: 900,
-                lineHeight: 1.1,
-                marginBottom: "1rem",
-              }}
-            >
-              Divide gastos{" "}
-              <span className="gradient-text">sin dramas</span>
-              <br />
-              entre amigos
-            </h1>
-
-            <p
-              style={{
-                fontSize: "1.125rem",
-                color: "var(--text-secondary)",
-                lineHeight: 1.7,
-                marginBottom: "2rem",
-              }}
-            >
-              Registra quién pagó qué en tu viaje y descubre exactamente cómo
-              quedar a mano. Matemáticas perfectas, sin redondeos raros.
-            </p>
-
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-              <Link
-                href="/trips/new"
-                className="btn-primary"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "0.875rem 1.75rem",
-                  textDecoration: "none",
-                  fontSize: "0.9375rem",
-                }}
-              >
-                <Plus size={18} />
-                Nuevo viaje
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+            {user ? (
+              <Link href="/trips" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", textDecoration: "none", fontSize: "0.875rem" }}>
+                Mis viajes <ArrowRight size={15} />
               </Link>
-              <Link
-                href="/trips"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "0.875rem 1.75rem",
-                  borderRadius: "var(--radius-full)",
-                  border: "1px solid var(--border-default)",
-                  textDecoration: "none",
-                  fontSize: "0.9375rem",
-                  color: "var(--text-secondary)",
-                  fontWeight: 500,
-                  transition: "all 0.2s",
-                }}
-              >
-                Ver mis viajes
-                <ArrowRight size={16} />
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Stats bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "1rem",
-              marginBottom: "3rem",
-            }}
-          >
-            {[
-              { icon: <TrendingUp size={20} />, label: "Viajes", value: totalTrips, color: "#8b5cf6" },
-              { icon: <Wallet size={20} />, label: "Gastos totales", value: totalExpenses, color: "#06b6d4" },
-              { icon: <Users size={20} />, label: "Total participantes", value: trips.reduce((s, t) => s + t.participants.length, 0), color: "#ec4899" },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                className="glass-card"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 + i * 0.08 }}
-                style={{ padding: "1.25rem" }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    marginBottom: 8,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: "var(--radius-md)",
-                      background: `${stat.color}22`,
-                      color: stat.color,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {stat.icon}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: "0.8125rem",
-                      color: "var(--text-muted)",
-                    }}
-                  >
-                    {stat.label}
-                  </span>
-                </div>
-                <div
-                  style={{
-                    fontSize: "1.75rem",
-                    fontWeight: 800,
-                    color: stat.color,
-                  }}
-                >
-                  {stat.value}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Recent trips */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: "1.25rem",
-              }}
-            >
-              <h2
-                style={{ fontSize: "1.25rem", fontWeight: 700 }}
-              >
-                {trips.length > 0 ? "Tus viajes" : "¡Empieza tu primer viaje!"}
-              </h2>
-              {trips.length > 3 && (
-                <Link
-                  href="/trips"
-                  style={{
-                    fontSize: "0.875rem",
-                    color: "var(--accent-violet)",
-                    textDecoration: "none",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}
-                >
-                  Ver todos <ArrowRight size={14} />
-                </Link>
-              )}
-            </div>
-
-            {trips.length === 0 ? (
-              <EmptyState />
             ) : (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-                  gap: "1rem",
-                }}
-              >
-                {trips.slice(0, 6).map((trip, i) => (
-                  <TripCard key={trip.id} trip={trip} index={i} />
-                ))}
-              </div>
+              <>
+                <Link href="/auth/login" style={{ padding: "8px 16px", borderRadius: "var(--radius-full)", border: "1px solid var(--border-default)", textDecoration: "none", color: "var(--text-secondary)", fontSize: "0.875rem", fontWeight: 500 }}>
+                  Iniciar sesión
+                </Link>
+                <Link href="/auth/register" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", textDecoration: "none", fontSize: "0.875rem" }}>
+                  Registrarse gratis
+                </Link>
+              </>
             )}
-          </motion.div>
-        </section>
-      </main>
-    </>
-  );
-}
+          </div>
+        </div>
+      </nav>
 
-function EmptyState() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="glass-card"
-      style={{
-        padding: "4rem 2rem",
-        textAlign: "center",
-      }}
-    >
-      <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>✈️</div>
-      <h3
-        style={{
-          fontSize: "1.25rem",
-          fontWeight: 700,
-          marginBottom: "0.5rem",
-        }}
-      >
-        Ningún viaje aún
-      </h3>
-      <p
-        style={{
-          color: "var(--text-secondary)",
-          marginBottom: "1.5rem",
-        }}
-      >
-        Crea tu primer viaje y comienza a dividir gastos con tus amigos
-      </p>
-      <Link
-        href="/trips/new"
-        className="btn-primary"
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 8,
-          padding: "0.75rem 1.5rem",
-          textDecoration: "none",
-          fontSize: "0.9375rem",
-        }}
-      >
-        <Plus size={18} />
-        Crear viaje
-      </Link>
-    </motion.div>
+      {/* ── Hero ── */}
+      <section className="page-container" style={{ paddingTop: "5rem", paddingBottom: "4rem", textAlign: "center" }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(124,58,237,0.12)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: "var(--radius-full)", padding: "6px 16px", marginBottom: "2rem", fontSize: "0.8125rem", color: "var(--accent-violet)", fontWeight: 600 }}>
+          <Zap size={13} /> Cuentas Claras, Amistades Duraderas
+        </div>
+
+        <h1 style={{ fontSize: "clamp(2.25rem, 6vw, 4rem)", fontWeight: 900, lineHeight: 1.1, marginBottom: "1.25rem" }}>
+          Divide gastos de viaje<br />
+          <span className="gradient-text">sin dramas, sin errores</span>
+        </h1>
+
+        <p style={{ fontSize: "1.125rem", color: "var(--text-secondary)", maxWidth: 560, margin: "0 auto 2.5rem", lineHeight: 1.7 }}>
+          Registra quién pagó qué, divide entre los que corresponde, y descubre exactamente cómo quedar a mano con tus amigos.
+        </p>
+
+        <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href="/auth/register" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "1rem 2rem", textDecoration: "none", fontSize: "1rem" }}>
+            Empezar gratis <ArrowRight size={18} />
+          </Link>
+          <Link href="/auth/login" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "1rem 2rem", borderRadius: "var(--radius-full)", border: "1px solid var(--border-default)", textDecoration: "none", fontSize: "1rem", color: "var(--text-secondary)", fontWeight: 500 }}>
+            Tengo cuenta
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Example ── */}
+      <section className="page-container" style={{ paddingBottom: "4rem" }}>
+        <div className="glass-card" style={{ padding: "2rem", maxWidth: 640, margin: "0 auto" }}>
+          <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-secondary)", marginBottom: "1.25rem", textAlign: "center", letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "0.75rem" }}>
+            🏔️ Ejemplo — Fin de semana en Samaipata
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+            {[
+              { from: "Diego", to: "Ana", amount: "Bs. 400.00", color: "#f59e0b" },
+              { from: "Carla", to: "Ana", amount: "Bs. 160.00", color: "#14b8a6" },
+            ].map((t) => (
+              <div key={t.from} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.875rem 1rem", background: "var(--bg-elevated)", borderRadius: "var(--radius-md)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: "50%", background: t.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem", fontWeight: 800, color: "white" }}>{t.from.slice(0,2).toUpperCase()}</div>
+                  <span style={{ fontWeight: 600 }}>{t.from}</span>
+                  <ArrowRight size={14} style={{ color: "var(--text-muted)" }} />
+                  <span style={{ fontWeight: 600 }}>Ana</span>
+                </div>
+                <span style={{ fontWeight: 800, color: "var(--accent-violet)" }}>{t.amount}</span>
+              </div>
+            ))}
+          </div>
+          <p style={{ textAlign: "center", fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "1rem" }}>
+            ✓ Suma de balances = 0 · Sin errores de redondeo
+          </p>
+        </div>
+      </section>
+
+      {/* ── Features ── */}
+      <section className="page-container" style={{ paddingBottom: "5rem" }}>
+        <h2 style={{ fontSize: "1.5rem", fontWeight: 800, textAlign: "center", marginBottom: "2rem" }}>
+          Todo lo que necesitas
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
+          {[
+            { icon: <Users size={22} />, title: "Participantes flexibles", desc: "Agrega o excluye personas en cada gasto. Divide solo entre quienes corresponda.", color: "#8b5cf6" },
+            { icon: <Receipt size={22} />, title: "CRUD de gastos completo", desc: "Crea, edita y elimina gastos con categoría, fecha y quién pagó.", color: "#06b6d4" },
+            { icon: <ArrowRightLeft size={22} />, title: "Liquidación óptima", desc: "Algoritmo greedy que minimiza la cantidad de transferencias necesarias.", color: "#10b981" },
+            { icon: <ShieldCheck size={22} />, title: "Sin bugs de redondeo", desc: "Todos los montos se guardan en centavos. sum(balances) = 0 garantizado.", color: "#f59e0b" },
+          ].map((f) => (
+            <div key={f.title} className="glass-card glass-card-hover" style={{ padding: "1.5rem" }}>
+              <div style={{ width: 44, height: 44, borderRadius: "var(--radius-md)", background: `${f.color}18`, color: f.color, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem" }}>{f.icon}</div>
+              <h3 style={{ fontSize: "1rem", fontWeight: 700, marginBottom: "0.5rem" }}>{f.title}</h3>
+              <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", lineHeight: 1.6 }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{ paddingBottom: "5rem", textAlign: "center" }}>
+        <h2 style={{ fontSize: "1.75rem", fontWeight: 800, marginBottom: "1rem" }}>
+          ¿Listo para tu próximo viaje?
+        </h2>
+        <Link href="/auth/register" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "1rem 2.5rem", textDecoration: "none", fontSize: "1rem" }}>
+          Crear cuenta gratis <ArrowRight size={18} />
+        </Link>
+      </section>
+
+      {/* Footer */}
+      <footer style={{ borderTop: "1px solid var(--border-subtle)", padding: "1.5rem", textAlign: "center", color: "var(--text-muted)", fontSize: "0.8rem" }}>
+        PagaPuej © 2025 · Cuentas Claras, Amistades Duraderas
+      </footer>
+    </main>
   );
 }
