@@ -133,26 +133,38 @@ export async function createExpenseAction(
 ) {
   await requireAuth();
 
-  const [expense] = await db
-    .insert(expenses)
-    .values({
-      tripId,
-      description: data.description,
-      amountCents: toCents(data.amount),
-      paidBy: data.paidBy,
-      category: data.category,
-      date: data.date,
-    })
-    .returning();
+  try {
+    await db.transaction(async (tx) => {
+      const [expense] = await tx
+        .insert(expenses)
+        .values({
+          tripId,
+          description: data.description,
+          amountCents: toCents(data.amount),
+          paidBy: data.paidBy,
+          category: data.category,
+          date: data.date,
+        })
+        .returning();
 
-  // Insert splits
-  if (data.splitAmong.length > 0) {
-    await db.insert(expenseSplits).values(
-      data.splitAmong.map((participantId) => ({
-        expenseId: expense.id,
-        participantId,
-      }))
-    );
+      // Insert splits
+      if (data.splitAmong.length > 0) {
+        // Ensure no duplicates
+        const uniqueParticipants = Array.from(new Set(data.splitAmong));
+        await tx.insert(expenseSplits).values(
+          uniqueParticipants.map((participantId) => ({
+            expenseId: expense.id,
+            participantId,
+          }))
+        );
+      }
+    });
+  } catch (err: any) {
+    console.error("=== FATAL DB ERROR in createExpenseAction ===");
+    console.error(err);
+    console.error("CODE:", err.code);
+    console.error("DETAIL:", err.detail);
+    throw err;
   }
 
   revalidatePath(`/trips/${tripId}/gastos`);
