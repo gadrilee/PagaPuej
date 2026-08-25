@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getTripWithDetails } from "@/server/queries/trips";
+import { TripProvider } from "@/hooks/useTripData";
 import type { Trip } from "@/types";
 import type { TripWithDetails } from "@/server/queries/trips";
 
@@ -65,12 +66,9 @@ export default async function TripLayout({
   const trip = adaptDbTripToFrontend(dbTrip);
   const userMeta = { email: user.email, name: user.user_metadata?.full_name };
 
-  // Pass trip as a serialised data-attribute via a hidden div — 
-  // Client components read it via TripDataProvider
   return (
-    <>
-      <div id="__trip_data__" data-trip={JSON.stringify(trip)} data-user={JSON.stringify(userMeta)} style={{ display: "none" }} />
+    <TripProvider trip={trip} userMeta={userMeta}>
       {children}
-    </>
+    </TripProvider>
   );
 }

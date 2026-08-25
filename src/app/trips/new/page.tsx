@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -21,7 +21,7 @@ const CURRENCIES = [
 
 export default function NewTripPage() {
   const router = useRouter();
-  const { createTrip } = useTripStore();
+  const [isPending, startTransition] = useTransition();
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [participants, setParticipants] = useState<string[]>(["", ""]);
   const [selectedEmoji, setSelectedEmoji] = useState("✈️");
@@ -50,12 +50,13 @@ export default function NewTripPage() {
     setParticipants((p) => p.map((x, idx) => (idx === i ? v : x)));
 
   const onSubmit = (data: TripFormData) => {
-    const trip = createTrip({
-      ...data,
-      coverEmoji: selectedEmoji,
-      participantNames: participants.filter((n) => n.trim()),
+    startTransition(async () => {
+      await createTripAction({
+        ...data,
+        coverEmoji: selectedEmoji,
+        participantNames: participants.filter((n) => n.trim()),
+      });
     });
-    router.push(`/trips/${trip.id}`);
   };
 
   const steps = [
@@ -455,10 +456,11 @@ export default function NewTripPage() {
                   </button>
                   <button
                     type="submit"
+                    disabled={isPending}
                     className="btn-primary"
                     style={{ flex: 2, padding: "0.875rem", fontSize: "0.9375rem" }}
                   >
-                    🚀 Crear Viaje
+                    {isPending ? "Creando..." : "🚀 Crear Viaje"}
                   </button>
                 </div>
               </motion.div>
