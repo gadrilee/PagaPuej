@@ -1,6 +1,5 @@
 "use client";
 
-import { use } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -13,20 +12,14 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
-import { useTripStore } from "@/store/useTripStore";
+import { useTripData } from "@/hooks/useTripData";
 import { calculateBalances, assertZeroSum, formatAmount, fromCents } from "@/lib/calculations";
 import Navbar from "@/components/layout/Navbar";
 import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { getCurrency } from "@/lib/calculations";
 
-interface Props {
-  params: Promise<{ id: string }>;
-}
-
-export default function SaldosPage({ params }: Props) {
-  const { id } = use(params);
-  const { getTrip } = useTripStore();
-  const trip = getTrip(id);
+export default function SaldosPage() {
+  const { trip, userMeta } = useTripData();
 
   if (!trip) {
     return (
@@ -54,10 +47,10 @@ export default function SaldosPage({ params }: Props) {
 
   return (
     <>
-      <Navbar />
+      <Navbar userEmail={userMeta.email} userName={userMeta.name} />
       <main className="page-container" style={{ paddingTop: "2rem", paddingBottom: "4rem" }}>
         <Link
-          href={`/trips/${id}`}
+          href={`/trips/${trip.id}`}
           style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--text-muted)", textDecoration: "none", fontSize: "0.875rem", marginBottom: "1.25rem" }}
         >
           <ArrowLeft size={16} />
@@ -254,7 +247,7 @@ export default function SaldosPage({ params }: Props) {
 
         <div style={{ marginTop: "1rem", textAlign: "center" }}>
           <Link
-            href={`/trips/${id}/liquidar`}
+            href={`/trips/${trip.id}/liquidar`}
             className="btn-primary"
             style={{
               display: "inline-flex",

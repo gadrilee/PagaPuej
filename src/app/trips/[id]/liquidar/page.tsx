@@ -1,23 +1,16 @@
 "use client";
 
-import { use, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTripStore } from "@/store/useTripStore";
+import { useTripData } from "@/hooks/useTripData";
 import { calculateBalances, calculateSettlement, assertZeroSum, formatAmount } from "@/lib/calculations";
 import Navbar from "@/components/layout/Navbar";
-import { ArrowLeft, ArrowRightLeft, Check, Copy, Share2 } from "lucide-react";
+import { ArrowLeft, ArrowRightLeft, Check, Copy } from "lucide-react";
 import { getCurrency } from "@/lib/calculations";
 
-interface Props {
-  params: Promise<{ id: string }>;
-}
-
-export default function LiquidarPage({ params }: Props) {
-  const { id } = use(params);
-  const { getTrip } = useTripStore();
-  const trip = getTrip(id);
-
+export default function LiquidarPage() {
+  const { trip, userMeta } = useTripData();
   const [paid, setPaid] = useState<Set<string>>(new Set());
 
   if (!trip) {
@@ -60,10 +53,10 @@ export default function LiquidarPage({ params }: Props) {
 
   return (
     <>
-      <Navbar />
+      <Navbar userEmail={userMeta.email} userName={userMeta.name} />
       <main className="page-container" style={{ paddingTop: "2rem", paddingBottom: "4rem" }}>
         <Link
-          href={`/trips/${id}`}
+          href={`/trips/${trip.id}`}
           style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--text-muted)", textDecoration: "none", fontSize: "0.875rem", marginBottom: "1.25rem" }}
         >
           <ArrowLeft size={16} />
