@@ -1,38 +1,16 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getUserTrips } from "@/server/queries/trips";
+import { getUserTrips, adaptDbTripToFrontend } from "@/server/queries/trips";
 import Navbar from "@/components/layout/Navbar";
 import TripCard from "@/components/trips/TripCard";
 import { Plus, Map } from "lucide-react";
-import type { Trip as DbTrip } from "@/server/db/schema";
-import type { Trip } from "@/types";
-
-// ─── Convert DB trip to frontend Trip type ────────────────────────────────────
-function adaptTrip(dbTrip: DbTrip): Trip {
-  return {
-    id: dbTrip.id,
-    name: dbTrip.name,
-    destination: dbTrip.destination,
-    description: dbTrip.description ?? undefined,
-    startDate: dbTrip.startDate,
-    endDate: dbTrip.endDate,
-    participants: [],
-    expenses: [],
-    currency: dbTrip.currency as Trip["currency"],
-    customCurrencySymbol: dbTrip.customCurrencySymbol ?? undefined,
-    customCurrencyName: dbTrip.customCurrencyName ?? undefined,
-    coverEmoji: dbTrip.coverEmoji,
-    createdAt: dbTrip.createdAt.toISOString(),
-    updatedAt: dbTrip.updatedAt.toISOString(),
-  };
-}
 
 export default async function TripsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const dbTrips = user ? await getUserTrips(user.id) : [];
-  const trips = dbTrips.map(adaptTrip);
+  const trips = dbTrips.map(adaptDbTripToFrontend);
 
   return (
     <>

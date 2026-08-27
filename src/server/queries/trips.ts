@@ -2,6 +2,7 @@ import { db } from "@/server/db";
 import { trips, participants, expenses, expenseSplits, tripMembers } from "@/server/db/schema";
 import { eq, and } from "drizzle-orm";
 import type { Trip as DbTrip } from "@/server/db/schema";
+import type { Trip } from "@/types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -39,27 +40,21 @@ export type TripWithDetails = {
 
 // ─── Get all trips for a user ─────────────────────────────────────────────────
 
-export async function getUserTrips(userId: string): Promise<DbTrip[]> {
-  return db
-    .select({
-      id: trips.id,
-      name: trips.name,
-      destination: trips.destination,
-      description: trips.description,
-      startDate: trips.startDate,
-      endDate: trips.endDate,
-      currency: trips.currency,
-      customCurrencySymbol: trips.customCurrencySymbol,
-      customCurrencyName: trips.customCurrencyName,
-      coverEmoji: trips.coverEmoji,
-      ownerId: trips.ownerId,
-      createdAt: trips.createdAt,
-      updatedAt: trips.updatedAt,
-    })
+export async function getUserTrips(userId: string): Promise<TripWithDetails[]> {
+  const userTripIds = await db
+    .select({ id: trips.id })
     .from(trips)
     .innerJoin(tripMembers, eq(tripMembers.tripId, trips.id))
     .where(eq(tripMembers.userId, userId))
     .orderBy(trips.createdAt);
+
+  if (userTripIds.length === 0) return [];
+
+  const fullTrips = await Promise.all(
+    userTripIds.map((t) => getTripWithDetails(t.id, userId))
+  );
+
+  return fullTrips.filter((t): t is TripWithDetails => t !== null);
 }
 
 // ─── Get full trip with participants & expenses ───────────────────────────────
@@ -121,6 +116,40 @@ export async function getTripWithDetails(
       ...e,
       category: e.category as string,
       splitAmong: splitsMap.get(e.id) ?? [],
+    })),
+  };
+}
+
+// ─── Adapt DB trip to frontend Trip type ─────────────────────────────────────
+export function adaptDbTripToFrontend(dbTrip: TripWithDetails): Trip {
+  return {
+    id: dbTrip.id,
+    name: dbTrip.name,
+    destination: dbTrip.destination,
+    description: dbTrip.description ?? undefined,
+    startDate: dbTrip.startDate,
+    endDate: dbTrip.endDate,
+    currency: dbTrip.currency as Trip["currency"],
+    customCurrencySymbol: dbTrip.customCurrencySymbol ?? undefined,
+    customCurrencyName: dbTrip.customCurrencyName ?? undefined,
+    coverEmoji: dbTrip.coverEmoji,
+    createdAt: dbTrip.createdAt.toISOString(),
+    updatedAt: dbTrip.updatedAt.toISOString(),
+    participants: dbTrip.participants.map((p) => ({
+      id: p.id,
+      name: p.name,
+      color: p.color,
+    })),
+    expenses: dbTrip.expenses.map((e) => ({
+      id: e.id,
+      description: e.description,
+      amountCents: e.amountCents,
+      paidBy: e.paidBy,
+      splitAmong: e.splitAmong,
+      category: e.category as Trip["expenses"][0]["category"],
+      date: e.date,
+      createdAt: e.createdAt.toISOString(),
+      updatedAt: e.updatedAt.toISOString(),
     })),
   };
 }
