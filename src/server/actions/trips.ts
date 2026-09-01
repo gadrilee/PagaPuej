@@ -6,7 +6,7 @@ import { db } from "@/server/db";
 import { trips, tripMembers, participants, expenses, expenseSplits } from "@/server/db/schema";
 import { createClient } from "@/lib/supabase/server";
 import { eq, and } from "drizzle-orm";
-import { generateId, pickColor } from "@/lib/utils";
+import { generateId, pickColor, generateInviteCode } from "@/lib/utils";
 import { toCents } from "@/lib/calculations";
 import type { CurrencyCode, ExpenseCategory } from "@/types";
 
@@ -34,7 +34,7 @@ export async function createTripAction(data: {
   customCurrencySymbol?: string;
   customCurrencyName?: string;
   coverEmoji: string;
-  participantNames: string[];
+  participants: { name: string; userId?: string }[];
 }) {
   const user = await requireAuth();
 
@@ -51,22 +51,31 @@ export async function createTripAction(data: {
       customCurrencyName: data.customCurrencyName,
       coverEmoji: data.coverEmoji,
       ownerId: user.id,
+      inviteCode: generateInviteCode(),
     })
     .returning();
 
-  // Add owner to trip_members
-  await db.insert(tripMembers).values({
-    tripId: trip.id,
-    userId: user.id,
+  // Add participants and owners to trip_members
+  const validParticipants = data.participants.filter((n) => n.name.trim());
+  const memberIds = new Set<string>();
+  memberIds.add(user.id);
+  validParticipants.forEach(p => {
+    if (p.userId) memberIds.add(p.userId);
   });
 
-  // Add participants
-  const validNames = data.participantNames.filter((n) => n.trim());
-  if (validNames.length > 0) {
+  await db.insert(tripMembers).values(
+    Array.from(memberIds).map(userId => ({
+      tripId: trip.id,
+      userId,
+    }))
+  );
+
+  // Add participants to participants table
+  if (validParticipants.length > 0) {
     await db.insert(participants).values(
-      validNames.map((name, index) => ({
+      validParticipants.map((p, index) => ({
         tripId: trip.id,
-        name: name.trim(),
+        name: p.name.trim(),
         color: pickColor(index),
       }))
     );
@@ -90,6 +99,62 @@ export async function deleteTripAction(tripId: string) {
   await db.delete(trips).where(eq(trips.id, tripId));
   revalidatePath("/trips");
   redirect("/trips");
+}
+
+export async function joinTripAction(inviteCode: string) {
+  const user = await requireAuth();
+  
+  if (!inviteCode || inviteCode.trim().length === 0) {
+    throw new Error("Código inválido");
+  }
+
+  const [trip] = await db
+    .select()
+    .from(trips)
+    .where(eq(trips.inviteCode, inviteCode.trim().toUpperCase()));
+
+  if (!trip) {
+    throw new Error("Viaje no encontrado con este código");
+  }
+
+  // Check if already a member
+  const [existingMember] = await db
+    .select()
+    .from(tripMembers)
+    .where(and(eq(tripMembers.tripId, trip.id), eq(tripMembers.userId, user.id)));
+
+  if (!existingMember) {
+    // Add to members
+    await db.insert(tripMembers).values({
+      tripId: trip.id,
+      userId: user.id,
+    });
+
+    // Check if there is already a participant linked to this user
+    // (Wait, PagaPuej creates participants with just a string name)
+    // To keep it simple, we just create a participant with their user name so they appear in splits.
+    const userProfile = await db.query.profiles?.findFirst({ where: (p, { eq }) => eq(p.id, user.id) });
+    // Assuming `user` from supabase has email/name in user_metadata in requireAuth?
+    // Actually, we can just extract name from auth.user if they have one, or use their email prefix.
+    const name = user.user_metadata?.name || user.email?.split('@')[0] || "Invitado";
+    
+    // Check if participant name already exists (might be duplicate if someone added them manually)
+    const existingParticipants = await db
+      .select()
+      .from(participants)
+      .where(eq(participants.tripId, trip.id));
+    
+    if (!existingParticipants.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+      await db.insert(participants).values({
+        tripId: trip.id,
+        name: name,
+        color: pickColor(existingParticipants.length),
+      });
+    }
+  }
+
+  revalidatePath("/trips");
+  redirect(`/trips/${trip.id}`);
 }
 
 // ─── Participant Actions ──────────────────────────────────────────────────────
