@@ -66,7 +66,7 @@ export default function ProfilePageClient({ profile, email }: Props) {
         {/* Back */}
         <Link href="/trips" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--text-muted)", fontSize: "0.85rem", textDecoration: "none", marginBottom: "1.5rem" }}>
           <ArrowLeft size={14} />
-          Volver a Mis Viajes
+          Volver a Mis Planes
         </Link>
 
         {/* Header */}
@@ -200,7 +200,7 @@ export default function ProfilePageClient({ profile, email }: Props) {
             Zona de peligro
           </h2>
           <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
-            Eliminar tu cuenta es permanente e irreversible. Solo puedes hacerlo si no eres dueño de ningún viaje.
+            Eliminar tu cuenta es permanente e irreversible. Solo puedes hacerlo si no eres dueño de ningún plan.
           </p>
 
           {!showDeleteConfirm ? (

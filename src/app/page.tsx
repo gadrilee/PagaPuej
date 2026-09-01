@@ -26,7 +26,7 @@ export default async function HomePage() {
           <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
             {user ? (
               <Link href="/trips" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 18px", textDecoration: "none", fontSize: "0.875rem" }}>
-                Mis viajes <ArrowRight size={15} />
+                Mis planes <ArrowRight size={15} />
               </Link>
             ) : (
               <>
@@ -49,7 +49,7 @@ export default async function HomePage() {
         </div>
 
         <h1 style={{ fontSize: "clamp(2.25rem, 6vw, 4rem)", fontWeight: 900, lineHeight: 1.1, marginBottom: "1.25rem" }}>
-          Divide gastos de viaje<br />
+          Divide gastos de plan<br />
           <span className="gradient-text">sin dramas, sin errores</span>
         </h1>
 
@@ -119,7 +119,7 @@ export default async function HomePage() {
       {/* ── CTA ── */}
       <section style={{ paddingBottom: "5rem", textAlign: "center" }}>
         <h2 style={{ fontSize: "1.75rem", fontWeight: 800, marginBottom: "1rem" }}>
-          ¿Listo para tu próximo viaje?
+          ¿Listo para tu próximo plan?
         </h2>
         <Link href="/auth/register" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "1rem 2.5rem", textDecoration: "none", fontSize: "1rem" }}>
           Crear cuenta gratis <ArrowRight size={18} />

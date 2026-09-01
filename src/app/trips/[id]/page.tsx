@@ -26,8 +26,8 @@ export default function TripDetailPage() {
         <Navbar />
         <main className="page-container" style={{ paddingTop: "4rem", textAlign: "center" }}>
           <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>🔍</div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1rem" }}>Viaje no encontrado</h1>
-          <Link href="/trips" style={{ color: "var(--accent-violet)" }}>Volver a viajes</Link>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1rem" }}>Plan no encontrado</h1>
+          <Link href="/trips" style={{ color: "var(--accent-violet)" }}>Volver a planes</Link>
         </main>
       </>
     );
@@ -79,7 +79,7 @@ export default function TripDetailPage() {
       <main className="page-container" style={{ paddingTop: "2rem", paddingBottom: "4rem" }}>
         <Link href="/trips" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--text-muted)", textDecoration: "none", fontSize: "0.875rem", marginBottom: "1.25rem" }}>
           <ArrowLeft size={16} />
-          Todos los viajes
+          Todos los planes
         </Link>
 
         {/* Trip header */}
@@ -168,7 +168,7 @@ export default function TripDetailPage() {
             style={{ padding: "0.875rem 1.25rem", borderRadius: "var(--radius-full)", border: "1px solid rgba(244,63,94,0.3)", background: "rgba(244,63,94,0.08)", color: "var(--accent-rose)", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: "0.875rem" }}
           >
             {isPending ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
-            Eliminar viaje
+            Eliminar plan
           </button>
         </motion.div>
       </main>

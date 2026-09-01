@@ -114,7 +114,7 @@ export async function joinTripAction(inviteCode: string) {
     .where(eq(trips.inviteCode, inviteCode.trim().toUpperCase()));
 
   if (!trip) {
-    throw new Error("Viaje no encontrado con este código");
+    throw new Error("Plan no encontrado con este código");
   }
 
   // Check if already a member

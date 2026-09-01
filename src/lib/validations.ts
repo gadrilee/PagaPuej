@@ -19,7 +19,7 @@ export type ParticipantFormData = z.infer<typeof participantSchema>;
 // ─── Trip ────────────────────────────────────────────────────────────────────
 
 export const tripSchema = z.object({
-  name: z.string().min(1, "El nombre del viaje es requerido").max(80),
+  name: z.string().min(1, "El nombre del plan es requerido").max(80),
   destination: z.string().min(1, "El destino es requerido").max(80),
   description: z.string().max(200).optional(),
   startDate: z.string().min(1, "La fecha de inicio es requerida"),

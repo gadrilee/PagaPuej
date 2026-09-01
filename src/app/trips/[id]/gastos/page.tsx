@@ -91,7 +91,7 @@ export default function GastosPage() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card" style={{ padding: "4rem", textAlign: "center" }}>
             <div style={{ fontSize: "3rem", marginBottom: "0.75rem" }}>💸</div>
             <h2 style={{ fontWeight: 700, marginBottom: "0.5rem" }}>Sin gastos aún</h2>
-            <p style={{ color: "var(--text-secondary)", marginBottom: "1.25rem" }}>Registra el primer gasto del viaje</p>
+            <p style={{ color: "var(--text-secondary)", marginBottom: "1.25rem" }}>Registra el primer gasto del plan</p>
             <button onClick={() => setShowForm(true)} className="btn-primary" style={{ padding: "0.75rem 1.5rem", border: "none", cursor: "pointer", fontSize: "0.9rem" }}>
               <Plus size={16} style={{ marginRight: 6 }} /> Agregar gasto
             </button>
@@ -273,7 +273,7 @@ function NotFound() {
     <>
       <Navbar />
       <main className="page-container" style={{ paddingTop: "4rem", textAlign: "center" }}>
-        <h1>Viaje no encontrado</h1>
+        <h1>Plan no encontrado</h1>
         <Link href="/trips">Volver</Link>
       </main>
     </>

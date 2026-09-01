@@ -54,11 +54,11 @@ export default function JoinPageClient({ code: initialCode, isLoggedIn }: Props)
         <div style={{ width: 64, height: 64, borderRadius: 20, background: "var(--gradient-primary)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.25rem", fontSize: "2rem" }}>
           🗺️
         </div>
-        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.5rem" }}>Unirse a un viaje</h1>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.5rem" }}>Unirse a un plan</h1>
         <p style={{ color: "var(--text-secondary)", marginBottom: "2rem", fontSize: "0.9rem" }}>
           {isPending && isLoggedIn && initialCode
-            ? "Uniéndote al viaje..."
-            : "Ingresa el código de invitación para unirte al viaje de tus amigos."}
+            ? "Uniéndote al plan..."
+            : "Ingresa el código de invitación para unirte al plan de tus amigos."}
         </p>
 
         {isPending ? (

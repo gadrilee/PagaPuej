@@ -26,7 +26,7 @@ export default function SaldosPage() {
       <>
         <Navbar />
         <main className="page-container" style={{ paddingTop: "4rem", textAlign: "center" }}>
-          <h1>Viaje no encontrado</h1>
+          <h1>Plan no encontrado</h1>
           <Link href="/trips">Volver</Link>
         </main>
       </>

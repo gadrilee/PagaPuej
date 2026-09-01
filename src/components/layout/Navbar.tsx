@@ -9,7 +9,7 @@ import { useTheme } from "@/components/ThemeProvider";
 import { useState } from "react";
 
 const navItems = [
-  { href: "/trips", icon: Map, label: "Mis Viajes" },
+  { href: "/trips", icon: Map, label: "Mis Planes" },
 ];
 
 interface NavbarProps {
@@ -64,7 +64,7 @@ export default function Navbar({ userEmail, userName }: NavbarProps) {
 
           <Link href="/trips/new" className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", textDecoration: "none", fontSize: "0.875rem", marginLeft: 8 }}>
             <Plus size={16} />
-            Nuevo viaje
+            Nuevo plan
           </Link>
 
           {/* Theme toggle */}

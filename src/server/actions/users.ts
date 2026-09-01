@@ -92,7 +92,7 @@ export async function deleteAccountAction() {
 
   if (ownedTrips.length > 0) {
     throw new Error(
-      `No puedes eliminar tu cuenta mientras seas dueño de ${ownedTrips.length} viaje(s). Elimínalos primero.`
+      `No puedes eliminar tu cuenta mientras seas dueño de ${ownedTrips.length} plan(es). Elimínalos primero.`
     );
   }
 

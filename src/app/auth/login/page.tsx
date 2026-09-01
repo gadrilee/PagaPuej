@@ -122,7 +122,7 @@ export default function LoginPage() {
         <div className="glass-card" style={{ padding: "2rem" }}>
           <h1 style={{ fontSize: "1.4rem", fontWeight: 800, marginBottom: "0.25rem" }}>Bienvenido de vuelta</h1>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: "1.75rem" }}>
-            Ingresa a tu cuenta para ver tus viajes
+            Ingresa a tu cuenta para ver tus planes
           </p>
 
           <Suspense>

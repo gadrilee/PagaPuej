@@ -6,8 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTripData } from "@/hooks/useTripData";
 import { calculateBalances, calculateSettlement, assertZeroSum, formatAmount } from "@/lib/calculations";
 import Navbar from "@/components/layout/Navbar";
-import { ArrowLeft, ArrowRightLeft, Check, Copy } from "lucide-react";
+import { ArrowLeft, ArrowRightLeft, Check, Copy, FileDown } from "lucide-react";
 import { getCurrency } from "@/lib/calculations";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 
 export default function LiquidarPage() {
   const { trip, userMeta } = useTripData();
@@ -18,7 +21,7 @@ export default function LiquidarPage() {
       <>
         <Navbar />
         <main className="page-container" style={{ paddingTop: "4rem", textAlign: "center" }}>
-          <h1>Viaje no encontrado</h1>
+          <h1>Plan no encontrado</h1>
           <Link href="/trips">Volver</Link>
         </main>
       </>
@@ -45,10 +48,65 @@ export default function LiquidarPage() {
     .map((t) => `${t.fromName} → ${t.toName}: ${currency.symbol} ${(t.amountCents / 100).toFixed(2)}`)
     .join("\n");
 
+  const fallbackCopyTextToClipboard = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand("copy");
+    } catch (err) {
+      console.error("Fallback: Oops, unable to copy", err);
+    }
+    document.body.removeChild(textArea);
+  };
+
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(
-      `📋 Liquidación de "${trip.name}"\n\n${summaryText}\n\n— PagaPuej`
-    );
+    const text = `📋 Liquidación de "${trip.name}"\n\n${summaryText}\n\n— PagaPuej`;
+    if (!navigator.clipboard) {
+      fallbackCopyTextToClipboard(text);
+      return;
+    }
+    navigator.clipboard.writeText(text).catch((err) => {
+      console.error("Async: Could not copy text: ", err);
+      fallbackCopyTextToClipboard(text);
+    });
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.text(`Liquidación: ${trip.name}`, 14, 20);
+    
+    const tableData = transfers.map(t => [
+      t.fromName,
+      t.toName,
+      `${currency.symbol} ${(t.amountCents / 100).toFixed(2)}`
+    ]);
+
+    autoTable(doc, {
+      startY: 30,
+      head: [["Quién debe pagar", "A quién", "Monto"]],
+      body: tableData,
+    });
+
+    doc.save(`Liquidacion_${trip.name}.pdf`);
+  };
+
+  const exportToExcel = () => {
+    const data = transfers.map(t => ({
+      "Quién debe pagar": t.fromName,
+      "A quién": t.toName,
+      "Monto": (t.amountCents / 100).toFixed(2),
+      "Moneda": currency.symbol
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Liquidación");
+    XLSX.writeFile(workbook, `Liquidacion_${trip.name}.xlsx`);
   };
 
   return (
@@ -120,25 +178,43 @@ export default function LiquidarPage() {
               )}
             </AnimatePresence>
 
-            {/* Copy button */}
-            <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.25rem" }}>
+            {/* Copy & Export buttons */}
+            <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
               <button
                 onClick={copyToClipboard}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "0.625rem 1rem",
-                  borderRadius: "var(--radius-full)",
-                  border: "1px solid var(--border-default)",
-                  background: "var(--bg-elevated)",
-                  color: "var(--text-secondary)",
-                  cursor: "pointer",
-                  fontSize: "0.8125rem",
+                  display: "flex", alignItems: "center", gap: 6, padding: "0.625rem 1rem",
+                  borderRadius: "var(--radius-full)", border: "1px solid var(--border-default)",
+                  background: "var(--bg-elevated)", color: "var(--text-secondary)",
+                  cursor: "pointer", fontSize: "0.8125rem",
                 }}
               >
                 <Copy size={14} />
                 Copiar resumen
+              </button>
+              <button
+                onClick={exportToPDF}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6, padding: "0.625rem 1rem",
+                  borderRadius: "var(--radius-full)", border: "1px solid var(--border-default)",
+                  background: "var(--bg-elevated)", color: "var(--text-secondary)",
+                  cursor: "pointer", fontSize: "0.8125rem",
+                }}
+              >
+                <FileDown size={14} />
+                PDF
+              </button>
+              <button
+                onClick={exportToExcel}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6, padding: "0.625rem 1rem",
+                  borderRadius: "var(--radius-full)", border: "1px solid var(--border-default)",
+                  background: "var(--bg-elevated)", color: "var(--text-secondary)",
+                  cursor: "pointer", fontSize: "0.8125rem",
+                }}
+              >
+                <FileDown size={14} />
+                Excel
               </button>
             </div>
 

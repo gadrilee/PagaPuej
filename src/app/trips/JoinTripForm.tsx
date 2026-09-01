@@ -19,7 +19,7 @@ export default function JoinTripForm() {
         await joinTripAction(code.trim());
         setCode("");
       } catch (err: any) {
-        setError(err.message || "Error al unirse al viaje");
+        setError(err.message || "Error al unirse al plan");
       }
     });
   };
@@ -29,7 +29,7 @@ export default function JoinTripForm() {
       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
         <input
           type="text"
-          placeholder="Código de viaje (ej. ABX92R)"
+          placeholder="Código de plan (ej. ABX92R)"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           className="input-field"

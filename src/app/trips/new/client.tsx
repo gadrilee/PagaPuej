@@ -107,7 +107,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
   };
 
   const steps = [
-    { label: "Info del viaje", icon: <Plane size={16} /> },
+    { label: "Info del plan", icon: <Plane size={16} /> },
     { label: "Participantes", icon: <Users size={16} /> },
     { label: "Configuración", icon: <Settings size={16} /> },
   ];
@@ -130,7 +130,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
           }}
         >
           <ArrowLeft size={16} />
-          Volver a viajes
+          Volver a planes
         </Link>
 
         <motion.h1
@@ -138,10 +138,10 @@ export default function NewTripClient({ userName }: { userName: string }) {
           animate={{ opacity: 1, y: 0 }}
           style={{ fontSize: "1.75rem", fontWeight: 800, marginBottom: "0.5rem" }}
         >
-          ✈️ Nuevo Viaje
+          ✈️ Nuevo Plan
         </motion.h1>
         <p style={{ color: "var(--text-secondary)", marginBottom: "2rem" }}>
-          Configura tu viaje en 3 pasos
+          Configura tu plan en 3 pasos
         </p>
 
         {/* Step indicator */}
@@ -199,7 +199,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
               >
                 {/* Emoji picker */}
                 <div style={{ marginBottom: "1.5rem" }}>
-                  <label style={labelStyle}>Ícono del viaje</label>
+                  <label style={labelStyle}>Ícono del plan</label>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
                     {TRIP_EMOJIS.map((emoji) => (
                       <button
@@ -227,7 +227,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
                   </div>
                 </div>
 
-                <Field label="Nombre del viaje" error={errors.name?.message}>
+                <Field label="Nombre del plan" error={errors.name?.message}>
                   <input
                     {...register("name")}
                     className="input-field"
@@ -247,7 +247,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
                   <textarea
                     {...register("description")}
                     className="input-field"
-                    placeholder="Una nota sobre el viaje..."
+                    placeholder="Una nota sobre el plan..."
                     rows={2}
                     style={{ resize: "vertical" }}
                   />
@@ -284,7 +284,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
                 style={{ padding: "1.75rem" }}
               >
                 <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: "1.25rem" }}>
-                  Agrega a todas las personas del viaje (mínimo 2). Puedes invitar usuarios o agregarlos manualmente.
+                  Agrega a todas las personas del plan (mínimo 2). Puedes invitar usuarios o agregarlos manualmente.
                 </p>
 
                 {/* Buscar usuario por Username */}
@@ -459,7 +459,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
                 className="glass-card"
                 style={{ padding: "1.75rem" }}
               >
-                <Field label="Moneda del viaje" error={errors.currency?.message}>
+                <Field label="Moneda del plan" error={errors.currency?.message}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                     {CURRENCIES.map((c) => {
                       const isSelected = watchedCurrency === c.code;
@@ -534,7 +534,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
                     📋 Resumen
                   </div>
                   <div>Participantes válidos: {validParticipantsCount}</div>
-                  <div>Viajeros vinculados: {participants.filter((p) => p.userId).length}</div>
+                  <div>Miembros vinculados: {participants.filter((p) => p.userId).length}</div>
                 </div>
 
                 <div style={{ display: "flex", gap: "0.75rem" }}>
@@ -560,7 +560,7 @@ export default function NewTripClient({ userName }: { userName: string }) {
                     className="btn-primary"
                     style={{ flex: 2, padding: "0.875rem", fontSize: "0.9375rem" }}
                   >
-                    {isPending ? "Creando..." : "🚀 Crear Viaje"}
+                    {isPending ? "Creando..." : "🚀 Crear Plan"}
                   </button>
                 </div>
               </motion.div>
