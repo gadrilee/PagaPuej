@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/server/db";
-import { trips, tripMembers, participants, expenses, expenseSplits } from "@/server/db/schema";
+import { trips, tripMembers, participants, expenses, expenseSplits, profiles } from "@/server/db/schema";
 import { createClient } from "@/lib/supabase/server";
 import { eq, and } from "drizzle-orm";
 import { generateId, pickColor, generateInviteCode } from "@/lib/utils";
@@ -130,13 +130,15 @@ export async function joinTripAction(inviteCode: string) {
       userId: user.id,
     });
 
-    // Check if there is already a participant linked to this user
-    // (Wait, PagaPuej creates participants with just a string name)
-    // Assuming `user` from supabase has email/name in user_metadata in requireAuth?
-    // Actually, we can just extract name from auth.user if they have one, or use their email prefix.
-    const name = user.user_metadata?.name || user.email?.split('@')[0] || "Invitado";
+    // Get full name from profiles table
+    const [profile] = await db
+      .select({ name: profiles.name })
+      .from(profiles)
+      .where(eq(profiles.id, user.id));
     
-    // Check if participant name already exists (might be duplicate if someone added them manually)
+    const name = profile?.name || user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || "Invitado";
+    
+    // Check if participant name already exists
     const existingParticipants = await db
       .select()
       .from(participants)

@@ -79,12 +79,12 @@ export default function Navbar({ userEmail, userName }: NavbarProps) {
           {/* User + logout */}
           {userEmail && (
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: 8, paddingLeft: 8, borderLeft: "1px solid var(--border-subtle)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: "var(--radius-full)", background: "var(--bg-elevated)", fontSize: "0.8rem", color: "var(--text-secondary)" }}>
+              <Link href="/profile" style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: "var(--radius-full)", background: "var(--bg-elevated)", fontSize: "0.8rem", color: "var(--text-secondary)", textDecoration: "none", transition: "all 0.2s" }}>
                 <User size={14} />
                 <span style={{ maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {userName ?? userEmail}
                 </span>
-              </div>
+              </Link>
               <form action={signOutAction}>
                 <button type="submit" title="Cerrar sesión" style={{ padding: 8, borderRadius: "var(--radius-md)", background: "rgba(214,69,69,0.1)", border: "none", color: "var(--accent-rose)", cursor: "pointer", display: "flex", alignItems: "center" }}>
                   <LogOut size={16} />

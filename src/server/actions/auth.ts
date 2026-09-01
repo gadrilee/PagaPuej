@@ -50,8 +50,9 @@ export async function signUpAction(formData: FormData) {
     }
   }
 
-  // Email confirmation may be required — redirect to check-email page
-  redirect("/auth/check-email");
+  // Skip email confirmation — redirect directly to trips
+  revalidatePath("/", "layout");
+  redirect("/trips");
 }
 
 // ─── Sign In ──────────────────────────────────────────────────────────────────

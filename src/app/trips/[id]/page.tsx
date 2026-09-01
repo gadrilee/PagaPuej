@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useTripData } from "@/hooks/useTripData";
@@ -9,24 +9,16 @@ import { deleteTripAction, addParticipantAction, removeParticipantAction } from 
 import Navbar from "@/components/layout/Navbar";
 import {
   ArrowLeft, Receipt, BarChart3, ArrowRightLeft, Plus,
-  Users, Trash2, Calendar, Loader2, Copy, Check
+  Users, Trash2, Calendar, Loader2
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import InviteQR from "@/components/InviteQR";
 
 export default function TripDetailPage() {
   const { trip, userMeta } = useTripData();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyCode = () => {
-    if (trip) {
-      navigator.clipboard.writeText(trip.inviteCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
 
   if (!trip) {
     return (
@@ -105,13 +97,7 @@ export default function TripDetailPage() {
                   {formatDate(trip.startDate)} — {formatDate(trip.endDate)}
                 </div>
                 <div style={{ marginTop: 8 }}>
-                  <button 
-                    onClick={handleCopyCode}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: "var(--radius-full)", border: "1px dashed var(--accent-violet)", background: "rgba(124,58,237,0.05)", color: "var(--accent-violet)", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
-                  >
-                    {copied ? <Check size={12} /> : <Copy size={12} />}
-                    Código: {trip.inviteCode}
-                  </button>
+                  <InviteQR inviteCode={trip.inviteCode} baseUrl={typeof window !== "undefined" ? window.location.origin : ""} />
                 </div>
               </div>
             </div>
