@@ -6,7 +6,7 @@ import * as schema from "./schema";
 // Uses pgBouncer transaction-mode pooler for runtime queries.
 // For migrations, use DIRECT_URL (session-mode).
 
-const connectionString = process.env.DATABASE_URL!;
+const connectionString = process.env.DATABASE_URL || "postgres://dummy:dummy@dummy:5432/dummy";
 
 // Prevent multiple connections in development (Next.js hot reload)
 const globalForDb = global as unknown as { _db: ReturnType<typeof drizzle> | undefined };
