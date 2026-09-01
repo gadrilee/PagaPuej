@@ -9,7 +9,7 @@ import { deleteTripAction, addParticipantAction, removeParticipantAction } from 
 import Navbar from "@/components/layout/Navbar";
 import {
   ArrowLeft, Receipt, BarChart3, ArrowRightLeft, Plus,
-  Users, Trash2, Calendar, Loader2,
+  Users, Trash2, Calendar, Loader2, Copy, Check
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,15 @@ export default function TripDetailPage() {
   const { trip, userMeta } = useTripData();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyCode = () => {
+    if (trip) {
+      navigator.clipboard.writeText(trip.inviteCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   if (!trip) {
     return (
@@ -57,6 +66,13 @@ export default function TripDetailPage() {
   };
 
   const handleRemoveParticipant = (participantId: string, name: string) => {
+    // Verificar que no tenga saldo (deuda o saldo a favor)
+    const pBalance = balances.find((b) => b.participantId === participantId);
+    if (pBalance && pBalance.balanceCents !== 0) {
+      alert(`No puedes eliminar a ${name} porque tiene un saldo pendiente de ${formatAmount(Math.abs(pBalance.balanceCents), trip)} (${pBalance.balanceCents > 0 ? 'le deben' : 'debe'}). Realiza una liquidación primero.`);
+      return;
+    }
+
     if (confirm(`¿Eliminar a ${name}?`)) {
       startTransition(async () => {
         await removeParticipantAction(trip.id, participantId);
@@ -87,6 +103,15 @@ export default function TripDetailPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 6, color: "var(--text-muted)", fontSize: "0.8rem", marginTop: 4 }}>
                   <Calendar size={12} />
                   {formatDate(trip.startDate)} — {formatDate(trip.endDate)}
+                </div>
+                <div style={{ marginTop: 8 }}>
+                  <button 
+                    onClick={handleCopyCode}
+                    style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 10px", borderRadius: "var(--radius-full)", border: "1px dashed var(--accent-violet)", background: "rgba(124,58,237,0.05)", color: "var(--accent-violet)", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer", transition: "all 0.2s" }}
+                  >
+                    {copied ? <Check size={12} /> : <Copy size={12} />}
+                    Código: {trip.inviteCode}
+                  </button>
                 </div>
               </div>
             </div>
