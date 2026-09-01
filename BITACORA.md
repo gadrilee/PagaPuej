@@ -22,7 +22,8 @@
 | 12 | 2026-09-01 12:26 | 🎨 UI / UX | "Ahora puedes agregar modo claro con esta paleta de colores (el modo oscuro será el que está actualmente tal cual). También puedes verificar el frontend para el responsive para que dé en cada dispositivo y no se recorten los espacios. Paleta: Principal #16834B (Verde Santa Cruz), Secundario #3BAA68, Acento #8BCF8A, Fondo #F8FAF7, Texto principal #173B2A, Texto secundario #66756C, Superficies #FFFFFF, Error #D64545, Advertencia #E8B949." |
 | 13 | 2026-09-01 13:13 | 🐛 BUGFIX | "Lo hice correr localmente y me salio esto ./src/app/globals.css Error: Parsing CSS source code failed. Revisa que paso" |
 | 14 | 2026-09-01 13:17 | 🐛 BUGFIX | "Ahora me salio esto en la parte de los viajes, justo en esta ruta src/app/trips/[id]/page.tsx arreglalo" |
+| 15 | 2026-09-01 17:32 | 🐛 BUGFIX | "Hay un problema no puedo ingresar al perfil https://paga-puej.vercel.app/profile, intento con el boton pasa un rato y se redirige hacia donde estaba inicialmente https://paga-puej.vercel.app/trips Revisalo que paso ahi" |
 
 ---
 
-_Última actualización: 2026-09-01 13:18_
+_Última actualización: 2026-09-01 17:35_

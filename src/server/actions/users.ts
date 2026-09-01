@@ -63,9 +63,17 @@ export async function updateProfileAction(data: {
   if (conflict.length > 0) throw new Error("Ese nombre de usuario ya está en uso.");
 
   await db
-    .update(profiles)
-    .set({ name, username })
-    .where(eq(profiles.id, user.id));
+    .insert(profiles)
+    .values({
+      id: user.id,
+      email: user.email!,
+      name,
+      username,
+    })
+    .onConflictDoUpdate({
+      target: profiles.id,
+      set: { name, username },
+    });
 
   revalidatePath("/profile");
   revalidatePath("/trips");
