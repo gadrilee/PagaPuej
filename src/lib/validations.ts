@@ -37,10 +37,10 @@ export type TripFormData = z.infer<typeof tripSchema>;
 export const expenseSchema = z
   .object({
     description: z.string().min(1, "La descripción es requerida").max(100),
-    amount: z
-      .number({ invalid_type_error: "Ingresa un monto válido" })
-      .positive("El monto debe ser mayor a 0")
-      .max(9_999_999, "Monto demasiado alto"),
+    amount: z.preprocess(
+      (val) => Number(val),
+      z.number().positive("El monto debe ser mayor a 0").max(9_999_999, "Monto demasiado alto")
+    ),
     paidBy: z.string().min(1, "Selecciona quién pagó"),
     splitAmong: z
       .array(z.string())

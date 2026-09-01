@@ -104,7 +104,7 @@ export default function SaldosPage() {
                   color: "var(--text-primary)",
                   fontSize: 13,
                 }}
-                formatter={(value: number) => [`${currency.symbol} ${value.toFixed(2)}`, "Balance"]}
+                formatter={(value: any) => [`${currency.symbol} ${Number(value).toFixed(2)}`, "Balance"]}
               />
               <ReferenceLine y={0} stroke="var(--border-default)" strokeWidth={1} />
               <Bar dataKey="amount" radius={[6, 6, 0, 0]}>

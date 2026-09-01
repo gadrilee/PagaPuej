@@ -70,7 +70,7 @@ export default async function HomePage() {
       {/* ── Example ── */}
       <section className="page-container" style={{ paddingBottom: "4rem" }}>
         <div className="glass-card" style={{ padding: "2rem", maxWidth: 640, margin: "0 auto" }}>
-          <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-secondary)", marginBottom: "1.25rem", textAlign: "center", letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "0.75rem" }}>
+          <h2 style={{ fontWeight: 700, color: "var(--text-secondary)", marginBottom: "1.25rem", textAlign: "center", letterSpacing: "0.05em", textTransform: "uppercase", fontSize: "0.75rem" }}>
             🏔️ Ejemplo — Fin de semana en Samaipata
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>

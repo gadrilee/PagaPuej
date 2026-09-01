@@ -132,8 +132,6 @@ export async function joinTripAction(inviteCode: string) {
 
     // Check if there is already a participant linked to this user
     // (Wait, PagaPuej creates participants with just a string name)
-    // To keep it simple, we just create a participant with their user name so they appear in splits.
-    const userProfile = await db.query.profiles?.findFirst({ where: (p, { eq }) => eq(p.id, user.id) });
     // Assuming `user` from supabase has email/name in user_metadata in requireAuth?
     // Actually, we can just extract name from auth.user if they have one, or use their email prefix.
     const name = user.user_metadata?.name || user.email?.split('@')[0] || "Invitado";

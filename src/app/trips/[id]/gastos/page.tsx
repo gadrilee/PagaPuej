@@ -188,7 +188,7 @@ function ExpenseModal({
 }) {
   const allIds = trip.participants.map((p) => p.id);
   const { register, handleSubmit, control, watch, formState: { errors } } = useForm<ExpenseFormData>({
-    resolver: zodResolver(expenseSchema),
+    resolver: zodResolver(expenseSchema) as any,
     defaultValues: editing
       ? { description: editing.description, amount: fromCents(editing.amountCents), paidBy: editing.paidBy, splitAmong: editing.splitAmong, category: editing.category, date: editing.date }
       : { splitAmong: allIds, category: "otros", date: today() },
