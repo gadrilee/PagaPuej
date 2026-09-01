@@ -20,7 +20,9 @@
 | 10 | 2026-08-27 14:55 | 🐛 BUGFIX | "Hay un bug en la ruta `/trips`. No se actualiza de cuántos participantes ya hay, ni los gastos ni el total; aparece todo en 0. Revísalo y arréglalo refactorizando la consulta `getUserTrips`." |
 | 11 | 2026-09-01 00:30 | 🚀 NUEVAS FUNCIONES | "Al crear yo el viaje, mi nombre ya debería aparecer como participante uno automáticamente. Esto puede ser editado, pero no eliminado. El viaje solo se puede crear si hay dos o más. Que haya otra opción que sea buscar a alguien que tenga cuenta (por nombre de usuario), me muestra para agregarlo y le puedo agregar, y él desde su cuenta puede ver el viaje y registrar gastos. Además, cuando se generan gastos, no se puede eliminar a alguien del grupo si es que debe; poner una advertencia que debe tanto y no se puede eliminar, que se haga una consolidación primero." |
 | 12 | 2026-09-01 12:26 | 🎨 UI / UX | "Ahora puedes agregar modo claro con esta paleta de colores (el modo oscuro será el que está actualmente tal cual). También puedes verificar el frontend para el responsive para que dé en cada dispositivo y no se recorten los espacios. Paleta: Principal #16834B (Verde Santa Cruz), Secundario #3BAA68, Acento #8BCF8A, Fondo #F8FAF7, Texto principal #173B2A, Texto secundario #66756C, Superficies #FFFFFF, Error #D64545, Advertencia #E8B949." |
+| 13 | 2026-09-01 13:13 | 🐛 BUGFIX | "Lo hice correr localmente y me salio esto ./src/app/globals.css Error: Parsing CSS source code failed. Revisa que paso" |
+| 14 | 2026-09-01 13:17 | 🐛 BUGFIX | "Ahora me salio esto en la parte de los viajes, justo en esta ruta src/app/trips/[id]/page.tsx arreglalo" |
 
 ---
 
-_Última actualización: 2026-09-01 12:26_
+_Última actualización: 2026-09-01 13:18_
