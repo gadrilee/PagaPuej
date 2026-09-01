@@ -32,6 +32,7 @@ export type TripWithDetails = {
     amountCents: number;
     paidBy: string;
     category: string;
+    isPayment: boolean;
     date: string;
     createdAt: Date;
     updatedAt: Date;
@@ -149,6 +150,7 @@ export function adaptDbTripToFrontend(dbTrip: TripWithDetails): Trip {
       paidBy: e.paidBy,
       splitAmong: e.splitAmong,
       category: e.category as Trip["expenses"][0]["category"],
+      isPayment: e.isPayment,
       date: e.date,
       createdAt: e.createdAt.toISOString(),
       updatedAt: e.updatedAt.toISOString(),
