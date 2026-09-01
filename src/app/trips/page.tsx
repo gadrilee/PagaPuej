@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserTrips, adaptDbTripToFrontend } from "@/server/queries/trips";
 import Navbar from "@/components/layout/Navbar";
 import TripCard from "@/components/trips/TripCard";
+import JoinTripForm from "./JoinTripForm";
 import { Plus, Map } from "lucide-react";
 
 export default async function TripsPage() {
@@ -32,10 +33,13 @@ export default async function TripsPage() {
                 : `${trips.length} viaje${trips.length !== 1 ? "s" : ""} registrado${trips.length !== 1 ? "s" : ""}`}
             </p>
           </div>
-          <Link href="/trips/new" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "0.75rem 1.25rem", textDecoration: "none", fontSize: "0.875rem" }}>
-            <Plus size={16} />
-            Nuevo viaje
-          </Link>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <JoinTripForm />
+            <Link href="/trips/new" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "0.75rem 1.25rem", textDecoration: "none", fontSize: "0.875rem" }}>
+              <Plus size={16} />
+              Nuevo viaje
+            </Link>
+          </div>
         </div>
 
         {trips.length === 0 ? (

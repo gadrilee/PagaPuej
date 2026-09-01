@@ -18,7 +18,8 @@
 | 8 | 2026-08-25 17:19 | 🐛 BUGFIX | "Arregla el error 'Viaje no encontrado' que sale tras crear un viaje. Ocurre porque estamos leyendo el DOM durante el renderizado en un Client Component. Refactoriza eso usando un `React Context` (`TripProvider`) para pasar los datos correctamente, y con eso completa la Fase 4." |
 | 9 | 2026-08-25 17:48 | 🐛 BUGFIX | "Hay un nuevo error en la inserción de gastos (`expense_splits`). Arréglalo usando `db.transaction` para asegurar que el gasto y la división de pagos se inserten en la misma transacción y conexión. Añade también la lógica para eliminar participantes duplicados en el formulario." |
 | 10 | 2026-08-27 14:55 | 🐛 BUGFIX | "Hay un bug en la ruta `/trips`. No se actualiza de cuántos participantes ya hay, ni los gastos ni el total; aparece todo en 0. Revísalo y arréglalo refactorizando la consulta `getUserTrips`." |
+| 11 | 2026-09-01 00:30 | 🚀 NUEVAS FUNCIONES | "Al crear yo el viaje, mi nombre ya debería aparecer como participante uno automáticamente. Esto puede ser editado, pero no eliminado. El viaje solo se puede crear si hay dos o más. Que haya otra opción que sea buscar a alguien que tenga cuenta (por nombre de usuario), me muestra para agregarlo y le puedo agregar, y él desde su cuenta puede ver el viaje y registrar gastos. Además, cuando se generan gastos, no se puede eliminar a alguien del grupo si es que debe; poner una advertencia que debe tanto y no se puede eliminar, que se haga una consolidación primero." |
 
 ---
 
-_Última actualización: 2026-08-27 14:55_
+_Última actualización: 2026-09-01 00:36_

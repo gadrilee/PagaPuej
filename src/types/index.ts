@@ -76,6 +76,7 @@ export interface Trip {
   customCurrencySymbol?: string;
   customCurrencyName?: string;
   coverEmoji: string;
+  inviteCode: string;
   createdAt: string;
   updatedAt: string;
 }

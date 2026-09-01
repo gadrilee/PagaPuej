@@ -1,5 +1,5 @@
 import { pgTable, text, integer, timestamp, boolean, pgEnum, uuid } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
@@ -12,6 +12,16 @@ export const expenseCategoryEnum = pgEnum("expense_category", [
   "compras",
   "otros",
 ]);
+
+// ─── Profiles ───────────────────────────────────────────────────────────────────
+
+export const profiles = pgTable("profiles", {
+  id: uuid("id").primaryKey(), // auth.users.id
+  email: text("email").notNull(),
+  name: text("name").notNull(),
+  username: text("username").notNull().unique(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
 
 // ─── Trips ────────────────────────────────────────────────────────────────────
 
@@ -27,6 +37,7 @@ export const trips = pgTable("trips", {
   customCurrencyName: text("custom_currency_name"),
   coverEmoji: text("cover_emoji").notNull().default("✈️"),
   ownerId: uuid("owner_id").notNull(), // auth.users.id
+  inviteCode: text("invite_code").notNull().unique().default(sql`substring(md5(random()::text) from 1 for 6)`),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

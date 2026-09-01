@@ -82,6 +82,13 @@ export default function RegisterPage() {
               </div>
             </Field>
 
+            <Field label="Nombre de usuario (único)">
+              <div style={{ position: "relative" }}>
+                <User size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
+                <input name="username" type="text" required autoComplete="username" className="input-field" placeholder="ana_garcia123" style={{ paddingLeft: "2.5rem" }} pattern="^[a-zA-Z0-9_]+$" title="Solo letras, números y guiones bajos" />
+              </div>
+            </Field>
+
             <Field label="Correo electrónico">
               <div style={{ position: "relative" }}>
                 <Mail size={16} style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />

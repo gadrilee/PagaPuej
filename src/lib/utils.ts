@@ -10,6 +10,16 @@ export function generateId(): string {
   return nanoid(10);
 }
 
+export function generateInviteCode(): string {
+  // 6 character alphanumeric uppercase
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 /** Array of vibrant participant colors */
 export const PARTICIPANT_COLORS = [
   "#6366f1", // indigo

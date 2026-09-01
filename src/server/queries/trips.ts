@@ -17,6 +17,7 @@ export type TripWithDetails = {
   customCurrencySymbol: string | null;
   customCurrencyName: string | null;
   coverEmoji: string;
+  inviteCode: string;
   ownerId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -133,6 +134,7 @@ export function adaptDbTripToFrontend(dbTrip: TripWithDetails): Trip {
     customCurrencySymbol: dbTrip.customCurrencySymbol ?? undefined,
     customCurrencyName: dbTrip.customCurrencyName ?? undefined,
     coverEmoji: dbTrip.coverEmoji,
+    inviteCode: dbTrip.inviteCode,
     createdAt: dbTrip.createdAt.toISOString(),
     updatedAt: dbTrip.updatedAt.toISOString(),
     participants: dbTrip.participants.map((p) => ({
