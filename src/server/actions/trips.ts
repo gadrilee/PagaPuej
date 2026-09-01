@@ -287,3 +287,38 @@ export async function deleteExpenseAction(tripId: string, expenseId: string) {
   revalidatePath(`/trips/${tripId}/saldos`);
   revalidatePath(`/trips/${tripId}/liquidar`);
 }
+
+export async function recordPaymentAction(
+  tripId: string,
+  fromParticipantId: string, // debtor
+  toParticipantId: string, // creditor
+  amountCents: number
+) {
+  await requireAuth();
+
+  await db.transaction(async (tx) => {
+    // 1. Create the payment expense
+    const [expense] = await tx
+      .insert(expenses)
+      .values({
+        tripId,
+        description: "[Pago]", // Internally used or shown briefly
+        amountCents,
+        paidBy: fromParticipantId, // The debtor paid
+        category: "otros",
+        isPayment: true,
+        date: new Date().toISOString().split("T")[0],
+      })
+      .returning();
+
+    // 2. The creditor is the only one who "benefits" (owes this payment to the debtor)
+    await tx.insert(expenseSplits).values({
+      expenseId: expense.id,
+      participantId: toParticipantId,
+    });
+  });
+
+  revalidatePath(`/trips/${tripId}/gastos`);
+  revalidatePath(`/trips/${tripId}/saldos`);
+  revalidatePath(`/trips/${tripId}/liquidar`);
+}

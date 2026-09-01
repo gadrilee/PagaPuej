@@ -71,6 +71,7 @@ export const expenses = pgTable("expenses", {
   amountCents: integer("amount_cents").notNull(),
   paidBy: uuid("paid_by").notNull().references(() => participants.id, { onDelete: "cascade" }),
   category: expenseCategoryEnum("category").notNull().default("otros"),
+  isPayment: boolean("is_payment").notNull().default(false),
   date: text("date").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

@@ -24,7 +24,8 @@
 | 14 | 2026-09-01 13:17 | 🐛 BUGFIX | "Ahora me salio esto en la parte de los viajes, justo en esta ruta src/app/trips/[id]/page.tsx arreglalo" |
 | 15 | 2026-09-01 17:32 | 🐛 BUGFIX | "Hay un problema no puedo ingresar al perfil https://paga-puej.vercel.app/profile, intento con el boton pasa un rato y se redirige hacia donde estaba inicialmente https://paga-puej.vercel.app/trips Revisalo que paso ahi" |
 | 16 | 2026-09-01 17:50 | ✨ FEATURE | "Tambien algo para que sea mas generico, La app que sea para planes entonces cambia las partes donde dice Nuevo Viaje a Nuevo Plan: Mis Viajes a Mis Planes, asi sucecivamente en todo. Ademas en la parte de liquidar La parte de copiar no da correctamente, Deberia copiarse en texto plano, ademas agrega opciones de exportar en exel o pdf" |
+| 17 | 2026-09-01 19:27 | ✨ FEATURE | "Todos ya pagaron, pero no se actualiza el saldo, tiene que ser dinamico si es que ya pago alguno" |
 
 ---
 
-_Última actualización: 2026-09-01 17:58_
+_Última actualización: 2026-09-01 19:46_

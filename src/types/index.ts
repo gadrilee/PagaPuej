@@ -55,6 +55,7 @@ export interface Expense {
   paidBy: string; // Participant.id
   splitAmong: string[]; // Participant.ids
   category: ExpenseCategory;
+  isPayment: boolean;
   date: string; // ISO date string
   createdAt: string;
   updatedAt: string;

@@ -1,20 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTripData } from "@/hooks/useTripData";
 import { calculateBalances, calculateSettlement, assertZeroSum, formatAmount } from "@/lib/calculations";
 import Navbar from "@/components/layout/Navbar";
-import { ArrowLeft, ArrowRightLeft, Check, Copy, FileDown } from "lucide-react";
+import { ArrowLeft, ArrowRightLeft, Check, Copy, FileDown, Loader2 } from "lucide-react";
 import { getCurrency } from "@/lib/calculations";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
+import { recordPaymentAction } from "@/server/actions/trips";
 
 export default function LiquidarPage() {
   const { trip, userMeta } = useTripData();
-  const [paid, setPaid] = useState<Set<string>>(new Set());
+  const [isPending, startTransition] = useTransition();
 
   if (!trip) {
     return (
@@ -33,16 +34,18 @@ export default function LiquidarPage() {
   const transfers = calculateSettlement(balances);
   const currency = getCurrency(trip);
 
-  const togglePaid = (key: string) => {
-    setPaid((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  const handleRecordPayment = (fromId: string, toId: string, fromName: string, toName: string, amountCents: number) => {
+    if (window.confirm(`¿Registrar el pago de ${currency.symbol} ${(amountCents / 100).toFixed(2)} de ${fromName} a ${toName}?`)) {
+      startTransition(async () => {
+        try {
+          await recordPaymentAction(trip.id, fromId, toId, amountCents);
+        } catch (err) {
+          console.error(err);
+          alert("Error al registrar el pago");
+        }
+      });
+    }
   };
-
-  const allPaid = transfers.length > 0 && transfers.every((_, i) => paid.has(String(i)));
 
   const summaryText = transfers
     .map((t) => `${t.fromName} → ${t.toName}: ${currency.symbol} ${(t.amountCents / 100).toFixed(2)}`)
@@ -151,33 +154,6 @@ export default function LiquidarPage() {
           </motion.div>
         ) : (
           <>
-            {/* All done banner */}
-            <AnimatePresence>
-              {allPaid && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    padding: "1rem 1.25rem",
-                    borderRadius: "var(--radius-lg)",
-                    background: "rgba(16,185,129,0.1)",
-                    border: "1px solid rgba(16,185,129,0.25)",
-                    color: "#10b981",
-                    marginBottom: "1.25rem",
-                    fontWeight: 700,
-                    fontSize: "0.9375rem",
-                  }}
-                >
-                  <Check size={20} />
-                  🎉 ¡Todos los pagos marcados! Cuentas claras, amistades duraderas.
-                </motion.div>
-              )}
-            </AnimatePresence>
-
             {/* Copy & Export buttons */}
             <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
               <button
@@ -222,7 +198,6 @@ export default function LiquidarPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
               {transfers.map((transfer, i) => {
                 const key = String(i);
-                const isPaid = paid.has(key);
                 const from = trip.participants.find((p) => p.id === transfer.fromId);
                 const to = trip.participants.find((p) => p.id === transfer.toId);
 
@@ -235,7 +210,7 @@ export default function LiquidarPage() {
                     className="glass-card"
                     style={{
                       padding: "1.25rem 1.5rem",
-                      opacity: isPaid ? 0.5 : 1,
+                      opacity: isPending ? 0.5 : 1,
                       transition: "opacity 0.3s",
                     }}
                   >
@@ -324,48 +299,28 @@ export default function LiquidarPage() {
                         </div>
 
                         <button
-                          onClick={() => togglePaid(key)}
+                          onClick={() => handleRecordPayment(transfer.fromId, transfer.toId, transfer.fromName, transfer.toName, transfer.amountCents)}
+                          disabled={isPending}
                           style={{
                             width: 44,
                             height: 44,
                             borderRadius: "50%",
-                            border: `2px solid ${isPaid ? "#10b981" : "var(--border-default)"}`,
-                            background: isPaid ? "rgba(16,185,129,0.15)" : "var(--bg-elevated)",
-                            color: isPaid ? "#10b981" : "var(--text-muted)",
-                            cursor: "pointer",
+                            border: "2px solid var(--border-default)",
+                            background: "var(--bg-elevated)",
+                            color: "var(--text-muted)",
+                            cursor: isPending ? "not-allowed" : "pointer",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             transition: "all 0.2s",
                             flexShrink: 0,
                           }}
-                          title={isPaid ? "Marcar como pendiente" : "Marcar como pagado"}
+                          title="Registrar pago en base de datos"
                         >
-                          <Check size={18} />
+                          {isPending ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
                         </button>
                       </div>
                     </div>
-
-                    {isPaid && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        style={{
-                          marginTop: "0.75rem",
-                          paddingTop: "0.75rem",
-                          borderTop: "1px solid var(--border-subtle)",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 6,
-                          color: "#10b981",
-                          fontSize: "0.8rem",
-                          fontWeight: 600,
-                        }}
-                      >
-                        <Check size={14} />
-                        Pagado ✓
-                      </motion.div>
-                    )}
                   </motion.div>
                 );
               })}

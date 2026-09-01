@@ -168,11 +168,13 @@ export function calculateSettlement(balances: Balance[]): Transfer[] {
 // ─── Trip summary helpers ────────────────────────────────────────────────────
 
 export function getTripTotalCents(trip: Trip): number {
-  return trip.expenses.reduce((sum, e) => sum + e.amountCents, 0);
+  return trip.expenses
+    .filter((e) => !e.isPayment)
+    .reduce((sum, e) => sum + e.amountCents, 0);
 }
 
 export function getParticipantTotalPaidCents(trip: Trip, participantId: string): number {
   return trip.expenses
-    .filter((e) => e.paidBy === participantId)
+    .filter((e) => e.paidBy === participantId && !e.isPayment)
     .reduce((sum, e) => sum + e.amountCents, 0);
 }
