@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-/* ─── CSS Custom Properties ─────────────────────────────────────────────── */
-:root {
+/* ─── Dark Mode (default) ────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
   --bg-base: #0a0b0f;
   --bg-surface: #111318;
   --bg-elevated: #1a1d26;
@@ -28,16 +29,61 @@
   --gradient-card: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
   --gradient-glow: radial-gradient(ellipse at center, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
 
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+  --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.2);
+
+  --navbar-bg: rgba(10, 11, 15, 0.85);
+  --scrollbar-track: var(--bg-surface);
+  --scrollbar-thumb: var(--bg-elevated);
+}
+
+/* ─── Light Mode ─────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-base: #F8FAF7;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #EEF3ED;
+  --bg-overlay: #E4EDE3;
+
+  --border-subtle: rgba(23, 59, 42, 0.08);
+  --border-default: rgba(23, 59, 42, 0.14);
+  --border-strong: rgba(23, 59, 42, 0.25);
+
+  --text-primary: #173B2A;
+  --text-secondary: #66756C;
+  --text-muted: #9AB0A3;
+
+  --accent-purple: #16834B;
+  --accent-violet: #3BAA68;
+  --accent-blue: #3BAA68;
+  --accent-cyan: #8BCF8A;
+  --accent-pink: #3BAA68;
+  --accent-emerald: #16834B;
+  --accent-amber: #E8B949;
+  --accent-rose: #D64545;
+
+  --gradient-primary: linear-gradient(135deg, #16834B 0%, #3BAA68 60%, #8BCF8A 100%);
+  --gradient-card: linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(248,250,247,0.6) 100%);
+  --gradient-glow: radial-gradient(ellipse at center, rgba(22, 131, 75, 0.1) 0%, transparent 70%);
+
+  --shadow-sm: 0 1px 3px rgba(23,59,42,0.08);
+  --shadow-md: 0 4px 16px rgba(23,59,42,0.1);
+  --shadow-lg: 0 8px 32px rgba(23,59,42,0.12);
+  --shadow-glow: 0 0 40px rgba(22, 131, 75, 0.15);
+
+  --navbar-bg: rgba(248, 250, 247, 0.92);
+  --scrollbar-track: #EEF3ED;
+  --scrollbar-thumb: #C8DCC5;
+}
+
+/* ─── Radii (global) ────────────────────────────────────────────────────── */
+:root {
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
-
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
-  --shadow-glow: 0 0 40px rgba(124, 58, 237, 0.2);
 }
 
 /* ─── Reset & Base ─────────────────────────────────────────────────────── */
@@ -59,6 +105,7 @@ body {
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────────────────────── */
@@ -67,10 +114,10 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-surface);
+  background: var(--scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-elevated);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -79,8 +126,11 @@ body {
 
 /* ─── Selection ─────────────────────────────────────────────────────────── */
 ::selection {
-  background: rgba(124, 58, 237, 0.3);
+  background: rgba(22, 131, 75, 0.2);
   color: var(--text-primary);
+}
+[data-theme="dark"] ::selection {
+  background: rgba(124, 58, 237, 0.3);
 }
 
 /* ─── Glass Card ─────────────────────────────────────────────────────────── */
@@ -97,9 +147,14 @@ body {
 }
 .glass-card-hover:hover {
   border-color: var(--border-default);
-  background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+[data-theme="dark"] .glass-card-hover:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 100%);
+}
+[data-theme="light"] .glass-card-hover:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,1) 0%, rgba(248,250,247,0.8) 100%);
 }
 
 /* ─── Gradient Text ─────────────────────────────────────────────────────── */
@@ -130,7 +185,7 @@ body {
   transition: background 0.2s ease;
 }
 .btn-primary:hover::after {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.12);
 }
 .btn-primary:active {
   transform: scale(0.98);
@@ -154,6 +209,9 @@ body {
 }
 .input-field:focus {
   border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(59, 170, 104, 0.15);
+}
+[data-theme="dark"] .input-field:focus {
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
 }
 
@@ -175,6 +233,10 @@ body {
   50% { transform: translateY(-8px); }
 }
 @keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(22, 131, 75, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(22, 131, 75, 0.4); }
+}
+[data-theme="dark"] @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.2); }
   50% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.4); }
 }
@@ -182,12 +244,18 @@ body {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
 /* ─── Balance positive/negative ─────────────────────────────────────────── */
@@ -208,6 +276,12 @@ body {
   padding: 0 1.5rem;
 }
 
+@media (max-width: 640px) {
+  .page-container {
+    padding: 0 1rem;
+  }
+}
+
 /* ─── Glow background decorations ───────────────────────────────────────── */
 .glow-blob {
   position: fixed;
@@ -216,4 +290,34 @@ body {
   opacity: 0.08;
   pointer-events: none;
   z-index: 0;
+}
+[data-theme="light"] .glow-blob {
+  opacity: 0.12;
+}
+
+/* ─── Responsive helpers ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  .stack-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .stack-mobile > * {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hide-xs {
+    display: none !important;
+  }
 }
